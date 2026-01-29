@@ -1,3 +1,11 @@
+<img
+src="https://i.imgur.com/Mmo26FF.jpeg" alt="banner">
+
+<h1 align="center">
+  <img src="https://i.imgur.com/aJOeqWF.jpeg" width="22px" alt="icon">
+  SIZU - BOT Chat Messenger
+</h1>
+
 <div align="center">
   <h3>🌋𝐃𝐄𝐏𝐋𝐎𝐘𝐌𝐄𝐍𝐓 𝐙𝐎𝐍𝐄𝐒🌋</h3>
   <table>
