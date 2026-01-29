@@ -1,370 +1,202 @@
-const { config } = global.GoatBot;
 const { writeFileSync } = require("fs-extra");
+const { config } = global.GoatBot;
+const { client } = global;
 
 module.exports = {
   config: {
-    name: "whitelist",
-    aliases: ["wl"],
-    version: "2.0",
-    author: "NeoKEX",
+    name: "whitelists",
+    aliases: ["wlonly", "onlywlst", "onlywhitelist", "wl"],
+    version: "1.5",
+    author: "SiFu",
     countDown: 5,
-    role: 2,
+    role: 0,
     description: {
-      en: "Manage whitelist for users and threads - Control who can use the bot"
+      en: "Add, remove, edit whiteListIds role",
     },
     category: "owner",
     guide: {
-      en: '📋 USER WHITELIST:\n' +
-        '   {pn} user add <uid | @tag>: Add user to whitelist\n' +
-        '   {pn} user remove <uid | @tag>: Remove user from whitelist\n' +
-        '   {pn} user list: List all whitelisted users\n' +
-        '   {pn} user on/off: Enable/disable user whitelist mode\n\n' +
-        '📋 THREAD WHITELIST:\n' +
-        '   {pn} thread add [threadID]: Add thread to whitelist (current if no ID)\n' +
-        '   {pn} thread remove [threadID]: Remove thread from whitelist\n' +
-        '   {pn} thread list: List all whitelisted threads\n' +
-        '   {pn} thread on/off: Enable/disable thread whitelist mode\n\n' +
-        '📊 STATUS:\n' +
-        '   {pn} status: View whitelist status for both users and threads'
-    }
+      en:
+        "   {pn} [add | -a] <uid | @tag>: Add whiteListIds role for user" +
+        "\n	  {pn} [remove | -r] <uid | @tag>: Remove whiteListIds role of user" +
+        "\n	  {pn} [list | -l]: List all whiteListIds" +
+        "   {pn} -m [on | off]: turn on/off the mode only whitelistIds can use bot" +
+        "\n {pn} -m noti [on | off]: turn on/off the notification when user is not whitelistIds use bot",
+    },
   },
 
   langs: {
     en: {
-      userAdded: "✅ | Added %1 user(s) to whitelist:\n%2",
-      userAlreadyWhitelisted: "\n⚠️ | %1 user(s) already whitelisted:\n%2",
-      userMissingId: "⚠️ | Please enter a user ID or tag someone.",
-      userRemoved: "✅ | Removed %1 user(s) from whitelist:\n%2",
-      userNotWhitelisted: "\n⚠️ | %1 user(s) not in whitelist:\n%2",
-      userList: "📋 | Whitelisted Users (%1):\n%2",
-      userEmptyList: "📋 | No users are currently whitelisted.",
-      userModeEnabled: "✅ | User whitelist mode ENABLED.\nOnly whitelisted users can use the bot.",
-      userModeDisabled: "✅ | User whitelist mode DISABLED.",
-      
-      threadAdded: "✅ | Added thread to whitelist:\n• %1 (%2)",
-      threadAlreadyWhitelisted: "⚠️ | This thread is already whitelisted.",
-      threadRemoved: "✅ | Removed thread from whitelist:\n• %1",
-      threadNotWhitelisted: "⚠️ | This thread is not in whitelist.",
-      threadList: "📋 | Whitelisted Threads (%1):\n%2",
-      threadEmptyList: "📋 | No threads are currently whitelisted.",
-      threadModeEnabled: "✅ | Thread whitelist mode ENABLED.\nOnly whitelisted threads can use the bot.",
-      threadModeDisabled: "✅ | Thread whitelist mode DISABLED.",
-      threadInvalidId: "⚠️ | Please enter a valid thread ID.",
-      
-      status: "📊 | WHITELIST STATUS\n\n👤 User Whitelist: %1\n   Total users: %2\n\n💬 Thread Whitelist: %3\n   Total threads: %4",
-      noPermission: "❌ | Only premium users or higher can use this command.",
-      invalidSubcommand: "⚠️ | Invalid subcommand. Use: user, thread, or status"
-    }
+      added: `╭✦🍓 𝙰𝚍𝚍𝚎𝚍 %1 𝚞𝚜𝚎𝚛/𝚜\n%2`,
+      alreadyAdded: `\n╭✦🍓 𝙰𝚕𝚛𝚎𝚊𝚍𝚢 𝚊𝚍𝚍𝚎d %1 𝚞𝚜𝚎𝚛𝚜\n%2`,
+      missingIdAdd: "🍓 𝙿𝚕𝚎𝚊𝚜𝚎 𝚎𝚗𝚝𝚎𝚛 𝚄𝙸𝙳 𝚝𝚘 𝚊𝚍𝚍 𝚠𝚑𝚒𝚝𝚎𝙻𝚒𝚜𝚝 𝚛𝚘𝚕𝚎",
+      removed: `╭✦🍓 𝚁𝚎𝚖𝚘𝚟𝚎𝚍 %1 𝚞𝚜𝚎𝚛𝚜\n%2`,
+      notAdded: `╭✦🍓 𝙳𝚒𝚍𝚗'𝚝 𝚊𝚍𝚍𝚎𝚍 %1 𝚞𝚜𝚎𝚛𝚜\n%2`,
+      missingIdRemove: "🍓 𝙿𝚕𝚎𝚊𝚜𝚎 𝚎𝚗𝚝𝚎𝚛 𝚄𝙸𝙳 𝚝𝚘 𝚛𝚎𝚖𝚘𝚟𝚎 𝚠𝚑𝚒𝚝𝚎𝙻𝚒𝚜𝚝 𝚛𝚘𝚕𝚎",
+      listAdmin: `╭✦🍓 𝙻𝚒𝚜𝚝 𝚘𝚏 𝚄𝚜𝚎𝚛𝙸𝙳s\n%1\n╰‣`,
+      turnedOn: " | 𝚃𝚞𝚛𝚗𝚎𝚍 𝚘𝚗 𝚝𝚑𝚎 𝚖𝚘𝚍𝚎 𝚘𝚗𝚕𝚢 𝚠𝚑𝚒𝚝𝚎𝚕𝚒𝚜𝚝𝙸𝚍𝚜 𝚌𝚊𝚗 𝚞𝚜𝚎 𝚋𝚘𝚝",
+      turnedOff: " | 𝚃𝚞𝚛𝚗𝚎𝚍 𝚘𝚏𝚏 𝚝𝚑𝚎 𝚖𝚘𝚍𝚎 𝚘𝚗𝚕𝚢 𝚠𝚑𝚒𝚝𝚎𝚕𝚒𝚜𝚝𝙸𝚍𝚜 𝚌𝚊𝚗 𝚞𝚜𝚎 𝚋𝚘𝚝",
+      turnedOnNoti:
+        "🍓 𝚃𝚞𝚛𝚗𝚎𝚍 𝚘𝚗 𝚝𝚑𝚎 𝚗𝚘𝚝𝚒𝚏𝚒𝚌𝚊𝚝𝚒𝚘𝚗 𝚠𝚑𝚎𝚗 𝚞𝚜𝚎𝚛 𝚒𝚜 𝚗𝚘𝚝 𝚠𝚑𝚒𝚝𝚎𝚕𝚒𝚜𝚝𝙸𝚍𝚜 𝚞𝚜𝚎 𝚋𝚘𝚝",
+      turnedOffNoti:
+        "🍓 𝚃𝚞𝚛𝚗𝚎𝚍 𝚘𝚏𝚏 𝚝𝚑𝚎 𝚗𝚘𝚝𝚒𝚏𝚒𝚌𝚊𝚝𝚒𝚘𝚗 𝚠𝚑𝚎𝚗 𝚞𝚜𝚎𝚛 𝚒𝚜 𝚗𝚘𝚝 𝚠𝚑𝚒𝚝𝚎𝚕𝚒𝚜𝚝𝙸𝚍𝚜 𝚞𝚜𝚎 𝚋𝚘𝚝",
+    },
   },
 
-  onStart: async function ({ message, args, usersData, threadsData, event, getLang, role }) {
-    if (!config.whiteListMode) {
-      config.whiteListMode = {
-        enable: false,
-        whiteListIds: []
-      };
+  onStart: async function ({ message, args, usersData, event, getLang, api }) {
+    const permission = global.GoatBot.config.adminBot;
+    if (!permission.includes(event.senderID)) {
+      api.sendMessage(args.join(" "), event.threadID, event.messageID);
+      return;
     }
-    if (!config.whiteListMode.whiteListIds) {
-      config.whiteListMode.whiteListIds = [];
-    }
-    if (!config.whiteListModeThread) {
-      config.whiteListModeThread = {
-        enable: false,
-        whiteListThreadIds: []
-      };
-    }
-    if (!config.whiteListModeThread.whiteListThreadIds) {
-      config.whiteListModeThread.whiteListThreadIds = [];
-    }
-
-    const saveConfig = () => {
-      writeFileSync(global.client.dirConfig, JSON.stringify(config, null, 2));
-    };
-
-    const subCommand = args[0]?.toLowerCase();
-    const action = args[1]?.toLowerCase();
-
-    switch (subCommand) {
-      case "user":
-      case "u": {
-        switch (action) {
-          case "add":
-          case "-a": {
-            if (role < 3) return message.reply(getLang("noPermission"));
-            
-            let uids = [];
-            if (Object.keys(event.mentions).length > 0) {
-              uids = Object.keys(event.mentions);
-            } else if (event.messageReply) {
-              uids.push(event.messageReply.senderID);
-            } else {
-              uids = args.slice(2).filter(arg => !isNaN(arg));
-            }
-
-            if (uids.length === 0) {
-              return message.reply(getLang("userMissingId"));
-            }
-
-            const added = [];
-            const alreadyExists = [];
-
-            for (const uid of uids) {
-              const uidStr = String(uid);
-              if (config.whiteListMode.whiteListIds.map(String).includes(uidStr)) {
-                alreadyExists.push(uidStr);
-              } else {
-                config.whiteListMode.whiteListIds.push(uidStr);
-                added.push(uidStr);
-              }
-            }
-
-            saveConfig();
-
-            const addedNames = await Promise.all(
-              added.map(async uid => {
-                const name = await usersData.getName(uid);
-                return `• ${name} (${uid})`;
-              })
-            );
-            const alreadyNames = await Promise.all(
-              alreadyExists.map(async uid => {
-                const name = await usersData.getName(uid);
-                return `• ${name} (${uid})`;
-              })
-            );
-
-            let response = "";
-            if (added.length > 0) {
-              response += getLang("userAdded", added.length, addedNames.join("\n"));
-            }
-            if (alreadyExists.length > 0) {
-              response += getLang("userAlreadyWhitelisted", alreadyExists.length, alreadyNames.join("\n"));
-            }
-
-            return message.reply(response);
+    switch (args[0]) {
+      case "add":
+      case "-a":
+      case "+": {
+        if (args[1] = '+') {
+          let uids = [];
+          if (Object.keys(event.mentions).length > 0)
+            uids = Object.keys(event.mentions);
+          else if (event.messageReply) uids.push(event.messageReply.senderID);
+          else uids = args.filter((arg) => !isNaN(arg));
+          const notWLIds = [];
+          const authorIds = [];
+          for (const uid of uids) {
+            if (config.whiteListMode.whiteListIds.includes(uid))
+              authorIds.push(uid);
+            else notWLIds.push(uid);
           }
 
-          case "remove":
-          case "-r":
-          case "delete":
-          case "-d": {
-            if (role < 3) return message.reply(getLang("noPermission"));
-            
-            let uids = [];
-            if (Object.keys(event.mentions).length > 0) {
-              uids = Object.keys(event.mentions);
-            } else if (event.messageReply) {
-              uids.push(event.messageReply.senderID);
-            } else {
-              uids = args.slice(2).filter(arg => !isNaN(arg));
-            }
-
-            if (uids.length === 0) {
-              return message.reply(getLang("userMissingId"));
-            }
-
-            const removed = [];
-            const notFound = [];
-
-            for (const uid of uids) {
-              const uidStr = String(uid);
-              const index = config.whiteListMode.whiteListIds.map(String).indexOf(uidStr);
-              if (index !== -1) {
-                config.whiteListMode.whiteListIds.splice(index, 1);
-                removed.push(uidStr);
-              } else {
-                notFound.push(uidStr);
-              }
-            }
-
-            saveConfig();
-
-            const removedNames = await Promise.all(
-              removed.map(async uid => {
-                const name = await usersData.getName(uid);
-                return `• ${name} (${uid})`;
-              })
+          config.whiteListMode.whiteListIds.push(...notWLIds);
+          const getNames = await Promise.all(
+            uids.map((uid) =>
+              usersData.getName(uid).then((name) => ({ uid, name }))
+            )
+          );
+          writeFileSync(
+            global.client.dirConfig,
+            JSON.stringify(config, null, 2)
+          );
+          return message.reply(
+            (notWLIds.length > 0
+              ? getLang(
+                  "added",
+                  notWLIds.length,
+                  getNames
+                    .map(
+                      ({ uid, name }) =>
+                        `├‣ 𝚄𝚂𝙴𝚁 𝙽𝙰𝙼𝙴: ${name}\n├‣ 𝚄𝚂𝙴𝚁 𝙸𝙳: ${uid}`
+                    )
+                    .join("\n")
+                )
+              : "") +
+              (authorIds.length > 0
+                ? getLang(
+                    "alreadyAdded",
+                    authorIds.length,
+                    authorIds.map((uid) => `├‣ 𝚄𝚂𝙴𝚁 𝙸𝙳: ${uid}`).join("\n")
+                  )
+                : "")
+          );
+        } else return message.reply(getLang("missingIdAdd"));
+      }
+      case "remove":
+      case "rm":
+      case "-r":
+      case "-": {
+        if (args[1] = '-') {
+          let uids = [];
+          if (Object.keys(event.mentions).length > 0)
+            uids = Object.keys(event.mentions)[0];
+          else
+            uids =
+              args.filter((arg) => !isNaN(arg)) || event.messageReply.senderID;
+          const notWLIds = [];
+          const authorIds = [];
+          for (const uid of uids) {
+            if (config.whiteListMode.whiteListIds.includes(uid))
+              authorIds.push(uid);
+            else notWLIds.push(uid);
+          }
+          for (const uid of authorIds)
+            config.whiteListMode.whiteListIds.splice(
+              config.whiteListMode.whiteListIds.indexOf(uid),
+              1
             );
-            const notFoundNames = await Promise.all(
-              notFound.map(async uid => {
-                const name = await usersData.getName(uid);
-                return `• ${name} (${uid})`;
-              })
-            );
+          const getNames = await Promise.all(
+            authorIds.map((uid) =>
+              usersData.getName(uid).then((name) => ({ uid, name }))
+            )
+          );
+          writeFileSync(
+            global.client.dirConfig,
+            JSON.stringify(config, null, 2)
+          );
+          return message.reply(
+            (authorIds.length > 0
+              ? getLang(
+                  "removed",
+                  authorIds.length,
+                  getNames
+                    .map(
+                      ({ uid, name }) =>
+                        `├‣ 𝚄𝚂𝙴𝚁 𝙽𝙰𝙼𝙴: ${name}\n├‣ 𝚄𝚂𝙴𝚁 𝙸𝙳: ${uid}`
+                    )
+                    .join("\n")
+                )
+              : "") +
+              (notWLIds.length > 0
+                ? getLang(
+                    "notAdded",
+                    notWLIds.length,
+                    notWLIds.map((uid) => `├‣ 𝚄𝚂𝙴𝚁 𝙸𝙳: ${uid}`).join("\n├\n")
+                  )
+                : "")
+          );
+        } else return message.reply(getLang("missingIdRemove"));
+      }
+      case "list":
+      case "-l": {
+        const getNames = await Promise.all(
+          config.whiteListMode.whiteListIds.map((uid) =>
+            usersData.getName(uid).then((name) => ({ uid, name }))
+          )
+        );
+        return message.reply(
+          getLang(
+            "listAdmin",
+            getNames
+              .map(
+                ({ uid, name }) => `├‣ 𝚄𝚂𝙴𝚁 𝙽𝙰𝙼𝙴: ${name}\n├‣ 𝚄𝚂𝙴𝚁 𝙸𝙳: ${uid}`
+              )
+              .join("\n")
+          )
+        );
+      }
+      case "m":
+      case "mode":
+      case "-m": {
+        let isSetNoti = false;
+        let value;
+        let indexGetVal = 1;
 
-            let response = "";
-            if (removed.length > 0) {
-              response += getLang("userRemoved", removed.length, removedNames.join("\n"));
-            }
-            if (notFound.length > 0) {
-              response += getLang("userNotWhitelisted", notFound.length, notFoundNames.join("\n"));
-            }
-
-            return message.reply(response);
-          }
-
-          case "list":
-          case "-l": {
-            const whitelistIds = config.whiteListMode.whiteListIds;
-            
-            if (whitelistIds.length === 0) {
-              return message.reply(getLang("userEmptyList"));
-            }
-
-            const userNames = await Promise.all(
-              whitelistIds.map(async uid => {
-                const name = await usersData.getName(uid);
-                return `• ${name} (${uid})`;
-              })
-            );
-
-            return message.reply(getLang("userList", whitelistIds.length, userNames.join("\n")));
-          }
-
-          case "on":
-          case "enable": {
-            if (role < 3) return message.reply(getLang("noPermission"));
-            
-            config.whiteListMode.enable = true;
-            saveConfig();
-            return message.reply(getLang("userModeEnabled"));
-          }
-
-          case "off":
-          case "disable": {
-            if (role < 3) return message.reply(getLang("noPermission"));
-            
-            config.whiteListMode.enable = false;
-            saveConfig();
-            return message.reply(getLang("userModeDisabled"));
-          }
-
-          default:
-            return message.SyntaxError();
+        if (args[1] == "noti") {
+          isSetNoti = true;
+          indexGetVal = 2;
         }
-      }
 
-      case "thread":
-      case "t":
-      case "group":
-      case "g": {
-        switch (action) {
-          case "add":
-          case "-a": {
-            if (role < 3) return message.reply(getLang("noPermission"));
-            
-            let threadID = args[2];
-            if (!threadID) {
-              threadID = event.threadID;
-            }
-            
-            if (!threadID || isNaN(threadID)) {
-              return message.reply(getLang("threadInvalidId"));
-            }
-
-            const threadIDStr = String(threadID);
-            
-            if (config.whiteListModeThread.whiteListThreadIds.map(String).includes(threadIDStr)) {
-              return message.reply(getLang("threadAlreadyWhitelisted"));
-            }
-
-            config.whiteListModeThread.whiteListThreadIds.push(threadIDStr);
-            saveConfig();
-
-            let threadName = "Unknown Thread";
-            try {
-              const threadInfo = await threadsData.get(threadIDStr);
-              threadName = threadInfo?.threadName || threadName;
-            } catch (e) {}
-
-            return message.reply(getLang("threadAdded", threadName, threadIDStr));
-          }
-
-          case "remove":
-          case "-r":
-          case "delete":
-          case "-d": {
-            if (role < 3) return message.reply(getLang("noPermission"));
-            
-            let threadID = args[2];
-            if (!threadID) {
-              threadID = event.threadID;
-            }
-            
-            if (!threadID || isNaN(threadID)) {
-              return message.reply(getLang("threadInvalidId"));
-            }
-
-            const threadIDStr = String(threadID);
-            const index = config.whiteListModeThread.whiteListThreadIds.map(String).indexOf(threadIDStr);
-            
-            if (index === -1) {
-              return message.reply(getLang("threadNotWhitelisted"));
-            }
-
-            config.whiteListModeThread.whiteListThreadIds.splice(index, 1);
-            saveConfig();
-
-            return message.reply(getLang("threadRemoved", threadIDStr));
-          }
-
-          case "list":
-          case "-l": {
-            const threadIds = config.whiteListModeThread.whiteListThreadIds;
-            
-            if (threadIds.length === 0) {
-              return message.reply(getLang("threadEmptyList"));
-            }
-
-            const threadNames = await Promise.all(
-              threadIds.map(async tid => {
-                let name = "Unknown Thread";
-                try {
-                  const threadInfo = await threadsData.get(String(tid));
-                  name = threadInfo?.threadName || name;
-                } catch (e) {}
-                return `• ${name} (${tid})`;
-              })
-            );
-
-            return message.reply(getLang("threadList", threadIds.length, threadNames.join("\n")));
-          }
-
-          case "on":
-          case "enable": {
-            if (role < 3) return message.reply(getLang("noPermission"));
-            
-            config.whiteListModeThread.enable = true;
-            saveConfig();
-            return message.reply(getLang("threadModeEnabled"));
-          }
-
-          case "off":
-          case "disable": {
-            if (role < 3) return message.reply(getLang("noPermission"));
-            
-            config.whiteListModeThread.enable = false;
-            saveConfig();
-            return message.reply(getLang("threadModeDisabled"));
-          }
-
-          default:
-            return message.SyntaxError();
+        if (args[indexGetVal] == "on") value = true;
+        else if (args[indexGetVal] == "off") value = false;
+        if (isSetNoti) {
+          config.hideNotiMessage.whiteListMode = !value;
+          message.reply(getLang(value ? "turnedOnNoti" : "turnedOffNoti"));
+        } else {
+          config.whiteListMode.enable = value;
+          message.reply(getLang(value ? "turnedOn" : "turnedOff"));
         }
-      }
 
-      case "status":
-      case "info": {
-        const userEnabled = config.whiteListMode.enable ? "ON" : "OFF";
-        const userCount = config.whiteListMode.whiteListIds.length;
-        const threadEnabled = config.whiteListModeThread.enable ? "ON" : "OFF";
-        const threadCount = config.whiteListModeThread.whiteListThreadIds.length;
-        
-        return message.reply(getLang("status", userEnabled, userCount, threadEnabled, threadCount));
+        writeFileSync(client.dirConfig, JSON.stringify(config, null, 2));
       }
-
       default:
-        return message.reply(getLang("invalidSubcommand"));
     }
-  }
+  },
 };
