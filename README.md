@@ -5,7 +5,7 @@ src="https://i.imgur.com/QxNBXx0.jpeg" alt="banner">
  💕 SIZU - BOT 💕
  
  🍓MASSANGER🍓
- 🍓GROUP CHAT BOT🍓
+ 🍓CHAT BOT🍓
 </h1>
 
 <div align="center">
