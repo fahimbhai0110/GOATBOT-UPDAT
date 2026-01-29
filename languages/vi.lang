@@ -94,6 +94,7 @@ handlerEvents.threadBanned=Nhóm này đã bị Admin cấm sử dụng bot\n» 
 handlerEvents.onlyAdminBox=Hiện tại nhóm này đã được bật chế độ chỉ quản trị viên nhóm mới có thể sử dụng bot
 handlerEvents.onlyAdminBot=❌ | Hiện tại đã bật chế độ chỉ admin bot mới có thể sử dụng bot
 handlerEvents.commandNotFound=Lệnh "%1" không tồn tại, gõ %2help để xem tất cả lệnh hiện có
+handlerEvents.commandNotFoundSuggestion=Ý bạn là %1?
 handlerEvents.commandNotFound2=Lệnh bạn sử dụng không tồn tại, gõ %1help để xem tất cả lệnh hiện có
 handlerEvents.commandSyntaxError=Lệnh bạn đang sử dụng sai cú pháp, vui lòng gõ %1help %2 để xem chi tiết cách sử dụng lệnh này
 handlerEvents.onlyAdmin=❌ | Chỉ quản trị viên của nhóm chat mới có thể dùng lệnh "%1"

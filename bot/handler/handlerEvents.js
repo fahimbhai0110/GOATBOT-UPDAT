@@ -401,7 +401,8 @@ module.exports = function (api, threadModel, userModel, dashBoardModel, globalMo
                                         
                                         let suggestionMsg = utils.getText({ lang: langCode, head: "handlerEvents" }, "commandNotFound", commandName, prefix);
                                         if (bestMatch) {
-                                                suggestionMsg += `\n\nDid you mean: ${prefix}${bestMatch}?`;
+                                                const suggestionText = utils.getText({ lang: langCode, head: "handlerEvents" }, "commandNotFoundSuggestion", `${prefix}${bestMatch}`);
+                                                suggestionMsg += `\n\n${suggestionText}`;
                                         }
                                         
                                         return await message.reply(suggestionMsg);
