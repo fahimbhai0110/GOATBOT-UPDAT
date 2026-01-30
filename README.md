@@ -4,8 +4,8 @@ src="https://i.imgur.com/QxNBXx0.jpeg" alt="banner">
 <h1 align="center">
  💕 SIZU - BOT 💕
  
- 🍓MASSANGER🍓
- 🍓CHAT BOT🍓
+- 🍓MASSANGER🍓
+- 🍓CHAT BOT🍓
 </h1>
 
 <div align="center">
